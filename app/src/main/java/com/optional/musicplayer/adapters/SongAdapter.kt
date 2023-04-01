@@ -7,10 +7,12 @@ import com.optional.musicplayer.R
 import com.optional.musicplayer.data.entities.Song
 import com.optional.musicplayer.databinding.SongItemBinding
 
-class SongAdapter(private val songList: List<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
-
+class SongAdapter(private var songList: List<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
     inner class SongViewHolder(val binding: SongItemBinding) : RecyclerView.ViewHolder(binding.root)
 
+    fun setList(songs: List<Song>) {
+        songList = songs
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = SongItemBinding.inflate(layoutInflater, parent, false)
@@ -28,6 +30,8 @@ class SongAdapter(private val songList: List<Song>) : RecyclerView.Adapter<SongA
     override fun getItemCount(): Int {
         return songList.size
     }
+
+
 
 
 }
