@@ -1,35 +1,32 @@
 package com.optional.musicplayer.ui.fragments
 
 import android.Manifest
+import android.content.ContentUris
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.optional.musicplayer.R
 import com.optional.musicplayer.adapters.SongAdapter
 import com.optional.musicplayer.data.entities.Song
 import com.optional.musicplayer.databinding.FragmentHomeBinding
-import com.optional.musicplayer.ui.viewmodels.HomeViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 class HomeFragment: Fragment(R.layout.fragment_home) {
 
     private lateinit var binding: FragmentHomeBinding
     lateinit var permissionsLauncher: ActivityResultLauncher<Array<String>>
     private var readExternalGranted = false
+    private var granularAudioPermission = false
     private lateinit var songAdapter: SongAdapter
     private var externalAudioGranted = false
 
@@ -43,28 +40,22 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
 
             readExternalGranted = permissions[Manifest.permission.READ_EXTERNAL_STORAGE] ?: readExternalGranted
 
-            // add any permissions here ...
-
-            if(readExternalGranted) {
-                createSongAdapter()
-                binding.songsRecyclerView.adapter = songAdapter
-                binding.songsRecyclerView.layoutManager = LinearLayoutManager(this.context)
+            hasSdk33 {
+                granularAudioPermission = permissions[Manifest.permission.READ_MEDIA_AUDIO] ?:granularAudioPermission
             }
-            else {
-                Toast.makeText(this.requireContext(), "Can't load songs without permission.", Toast.LENGTH_LONG).show()
+
+            songAdapter = SongAdapter()
+
+
+
+            if(readExternalGranted || granularAudioPermission) {
+                createSongAdapter()
             }
         }
         requestPermissions()
 
 
     }
-
-
-
-
-
-
-
     private suspend fun loadSongsList() : List<Song> {
 
             return withContext(Dispatchers.IO) {
@@ -78,7 +69,7 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
                 MediaStore.Audio.Media.TITLE,
                 MediaStore.Audio.Media.ALBUM_ID,
                 MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.DURATION
+                MediaStore.Audio.Media.DURATION,
             )
 
             val songs = mutableListOf<Song>()
@@ -103,7 +94,7 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
                     val artist = cursor.getString(artistColumn)
                     val duration = cursor.getInt(durationColumn)
 
-                    songs.add(Song(id, title, albumId, artist, duration))
+                    songs.add(Song(id, title, albumId, artist, duration, imagePath = ""))
                 }
                 songs.toList()
             } ?: listOf()
@@ -115,20 +106,35 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
         lifecycleScope.launch {
             songs = loadSongsList()
             songAdapter.setList(songs)
+            binding.songsRecyclerView.adapter = songAdapter
+            binding.songsRecyclerView.layoutManager = LinearLayoutManager(context)
         }
     }
 
     private fun requestPermissions() {
-        val hasReadPermission = ContextCompat.checkSelfPermission(
+        val hasReadExternalPermission = ContextCompat.checkSelfPermission(
             this.requireContext(),
             Manifest.permission.READ_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
 
-        val requestList = mutableListOf<String>()
-        readExternalGranted = hasReadPermission
+        var hasReadPermission = hasReadExternalPermission
 
-        if(!readExternalGranted) {
+        hasSdk33 {
+            val hasAudioPermission = ContextCompat.checkSelfPermission(
+                this.requireContext(),
+                Manifest.permission.READ_MEDIA_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+
+            hasReadPermission = hasReadExternalPermission && hasAudioPermission
+        }
+
+        val requestList = mutableListOf<String>()
+
+        if(!hasReadPermission) {
             requestList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            hasSdk33 {
+                requestList.add(Manifest.permission.READ_MEDIA_AUDIO)
+            }
         }
 
         if(requestList.isNotEmpty()) {
@@ -137,3 +143,9 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
     }
 }
 
+inline fun <T> hasSdk33(onHasSdk33: () -> T) : T? {
+    return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) onHasSdk33() else null
+}
+inline fun <T> hasSdk29(onHasSdk29: () -> T) : T? {
+    return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) onHasSdk29() else null
+}

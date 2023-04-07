@@ -3,15 +3,22 @@ package com.optional.musicplayer.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import android.provider.MediaStore
+import com.bumptech.glide.Glide
 import com.optional.musicplayer.R
 import com.optional.musicplayer.data.entities.Song
 import com.optional.musicplayer.databinding.SongItemBinding
+import com.optional.musicplayer.ui.fragments.HomeFragment
+import com.optional.musicplayer.ui.viewmodels.HomeViewModel
+import kotlinx.coroutines.withContext
 
-class SongAdapter(private var songList: List<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+class SongAdapter() : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
     inner class SongViewHolder(val binding: SongItemBinding) : RecyclerView.ViewHolder(binding.root)
 
+    private var songList = mutableListOf<Song>()
     fun setList(songs: List<Song>) {
-        songList = songs
+        songList.clear()
+        songList.addAll(songs)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SongViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -23,7 +30,10 @@ class SongAdapter(private var songList: List<Song>) : RecyclerView.Adapter<SongA
         holder.binding.apply {
             songTitle.text = songList[position].title
             songArtist.text = songList[position].artist
-            imageView.setImageResource(R.drawable.basic_artwork)
+
+            Glide.with(holder.itemView.rootView.context)
+                .load(songList[position].imagePath)
+                .placeholder(R.drawable.basic_artwork).into(imageView)
         }
     }
 
