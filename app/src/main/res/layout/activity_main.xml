@@ -1,20 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
+    <include layout="@layout/toolbar"/>
+
+    <HorizontalScrollView
+        android:id="@+id/song_collection_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:requiresFadingEdge="horizontal"
+        android:fadingEdgeLength="100dp"
+        android:fadeScrollbars="true"
+        android:layout_below="@id/toolbar"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black"
+            android:paddingHorizontal="10dp">
+
+            <TextView
+                android:id="@+id/favorites_selection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Favorites"
+                android:paddingHorizontal="15dp"
+                android:textSize="20sp"
+                android:textColor="@color/beige"
+                android:textStyle="normal"/>
+
+            <TextView
+                android:id="@+id/tracks_selection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tracks"
+                android:paddingHorizontal="15dp"
+                android:textSize="20sp"
+                android:textColor="@color/beige"
+                android:textStyle="normal"/>
+
+            <TextView
+                android:id="@+id/playlists_selection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="15dp"
+                android:textSize="20sp"
+                android:textColor="@color/beige"
+                android:text="Playlists"
+                android:textStyle="normal"/>
+
+            <TextView
+                android:id="@+id/albums_selection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="15dp"
+                android:textSize="20sp"
+                android:textColor="@color/beige"
+                android:text="Albums"
+                android:textStyle="normal"/>
+
+            <TextView
+                android:id="@+id/artists_selection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="15dp"
+                android:textSize="20sp"
+                android:textColor="@color/beige"
+                android:text="Artists"
+                android:textStyle="normal"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        app:defaultNavHost="true"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/song_collection_wrapper"
+        android:layout_above="@id/player_wrapper"
+        app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        android:id="@+id/player_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/rounded_corners_shape">
+
+        <ImageView
+            android:id="@+id/artwork_thumbnail"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/rounded_corners_shape"
+            android:contentDescription="@string/artwork_thumbnail"
+            android:padding="5dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/artwork_thumbnail"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="15dp"
+            android:layout_toEndOf="@id/artwork_thumbnail"
+            android:paddingHorizontal="6dp">
+
+            <TextView
+                android:id="@+id/current_song_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:text="Current song title"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/current_song_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/current_song_title"
+                android:text="Artist"
+                android:textSize="10sp" />
+
+            <ImageView
+                android:id="@+id/rewind_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/play_icon"
+                android:src="@drawable/baseline_fast_rewind_24"/>
+
+            <ImageView
+                android:id="@+id/play_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="10dp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/forward_icon"
+                android:src="@drawable/baseline_play_arrow_24"/>
+
+            <ImageView
+                android:id="@+id/forward_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingHorizontal="10dp"
+                android:layout_toStartOf="@id/queue_icon"
+                android:src="@drawable/baseline_fast_forward_24"/>
+
+            <ImageView
+                android:id="@+id/queue_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingHorizontal="10dp"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/baseline_queue_music_24"/>
+
+        </RelativeLayout>
+
+        </RelativeLayout>
+
+
+</RelativeLayout>

@@ -1,7 +1,6 @@
 package com.optional.musicplayer.ui.fragments
 
 import android.Manifest
-import android.content.ContentUris
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
