@@ -2,12 +2,27 @@ package com.optional.musicplayer.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.optional.musicplayer.adapters.SongAdapter
-import com.optional.musicplayer.data.entities.Song
+import com.optional.musicplayer.data.Song
+import com.optional.musicplayer.util.PlayedSongState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(): ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+     val playedSongState: PlayedSongState
+): ViewModel() {
 
 
+    fun onSongPlayed(song: Song) {
+        viewModelScope.launch {
+            playedSongState.onSongPlayed(song)
+        }
+    }
 
+    fun onPlayerClicked(song: Song) {
+        viewModelScope.launch {
+            playedSongState.onPlayerClicked(song)
+        }
+    }
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
-    <include layout="@layout/toolbar"/>
+    <include layout="@layout/toolbar" android:id="@+id/main_toolbar"/>
 
     <HorizontalScrollView
         android:id="@+id/song_collection_wrapper"
@@ -14,7 +14,7 @@
         android:requiresFadingEdge="horizontal"
         android:fadingEdgeLength="100dp"
         android:fadeScrollbars="true"
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/main_toolbar"
         android:scrollbars="none">
 
         <LinearLayout
@@ -102,7 +102,8 @@
             android:layout_marginStart="10dp"
             android:background="@drawable/rounded_corners_shape"
             android:contentDescription="@string/artwork_thumbnail"
-            android:padding="5dp" />
+            android:padding="5dp"
+            tools:srcCompat= "@drawable/basic_artwork"/>
 
         <RelativeLayout
             android:layout_width="match_parent"

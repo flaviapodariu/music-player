@@ -10,16 +10,22 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.optional.musicplayer.R
 import com.optional.musicplayer.adapters.SongAdapter
-import com.optional.musicplayer.data.entities.Song
+import com.optional.musicplayer.data.Song
 import com.optional.musicplayer.databinding.FragmentHomeBinding
+import com.optional.musicplayer.ui.viewmodels.HomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@AndroidEntryPoint
 class HomeFragment: Fragment(R.layout.fragment_home) {
 
     private lateinit var binding: FragmentHomeBinding
@@ -28,6 +34,7 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
     private var granularAudioPermission = false
     private lateinit var songAdapter: SongAdapter
     private var externalAudioGranted = false
+    private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,8 +50,18 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
                 granularAudioPermission = permissions[Manifest.permission.READ_MEDIA_AUDIO] ?:granularAudioPermission
             }
 
-            songAdapter = SongAdapter()
+            songAdapter = SongAdapter(
+                onClickListener = {
+                    homeViewModel.onSongPlayed(it)
+                }
+            )
 
+            lifecycleScope.launch {
+                homeViewModel.playedSongState.playerClicked.collectLatest {
+                    val action = HomeFragmentDirections.actionHomeDestToSongFragment(it.id)
+                    findNavController().navigate(action)
+                }
+            }
 
 
             if(readExternalGranted || granularAudioPermission) {
@@ -52,6 +69,8 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
             }
         }
         requestPermissions()
+
+        binding.songsRecyclerView
 
 
     }
@@ -95,6 +114,7 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
 
                     songs.add(Song(id, title, albumId, artist, duration, imagePath = ""))
                 }
+                homeViewModel.addAllSongs(songs.toList())
                 songs.toList()
             } ?: listOf()
         }

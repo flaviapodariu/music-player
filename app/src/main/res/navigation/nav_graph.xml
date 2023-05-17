@@ -9,5 +9,22 @@
         android:id="@+id/home_dest"
         android:name="com.optional.musicplayer.ui.fragments.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_home_dest_to_songFragment"
+            app:destination="@id/songFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/songFragment"
+        android:name="com.optional.musicplayer.ui.fragments.SongFragment"
+        android:label="fragment_song"
+        tools:layout="@layout/fragment_song" >
+        <argument
+            android:name="songId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/action_songFragment_to_home_dest"
+            app:destination="@id/home_dest" />
+    </fragment>
 </navigation>

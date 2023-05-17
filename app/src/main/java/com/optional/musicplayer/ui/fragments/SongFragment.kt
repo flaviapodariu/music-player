@@ -1,20 +1,35 @@
 package com.optional.musicplayer.ui.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import com.optional.musicplayer.R
+import com.optional.musicplayer.databinding.FragmentSongBinding
+import com.optional.musicplayer.ui.viewmodels.SongViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-class SongFragment : Fragment() {
+@AndroidEntryPoint
+class SongFragment : Fragment(R.layout.fragment_song) {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_song, container, false)
+    private lateinit var binding: FragmentSongBinding
+    private val songViewModel: SongViewModel by viewModels()
+    val args: SongFragmentArgs by navArgs()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentSongBinding.bind(view)
+
+        lifecycleScope.launch {
+            songViewModel.getSongById(args.songId).also {
+                binding.songTitleFullscreen.text = it.title
+                binding.songArtistFullscreen.text = it.artist
+            }
+        }
+
+
     }
 
 

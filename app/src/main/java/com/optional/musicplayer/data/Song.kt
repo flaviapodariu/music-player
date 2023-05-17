@@ -1,4 +1,4 @@
-package com.optional.musicplayer.data.entities
+package com.optional.musicplayer.data
 
 data class Song(
     val id: Int,

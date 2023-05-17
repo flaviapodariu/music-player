@@ -1,4 +1,6 @@
-package com.optional.musicplayer.data.entities
+package com.optional.musicplayer.data
+
+import com.optional.musicplayer.data.Song
 
 data class Playlist(
     val id: Int,
