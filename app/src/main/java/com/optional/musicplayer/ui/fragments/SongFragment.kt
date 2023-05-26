@@ -1,7 +1,9 @@
 package com.optional.musicplayer.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -24,9 +26,15 @@ class SongFragment : Fragment(R.layout.fragment_song) {
         binding = FragmentSongBinding.bind(view)
 
         lifecycleScope.launch {
-            songViewModel.getSongById(args.songId).also {
-                binding.songTitleFullscreen.text = it.title
-                binding.songArtistFullscreen.text = it.artist
+            songViewModel.getSongById(args.songId).also { song ->
+                binding.songTitleFullscreen.text = song.title
+                binding.songArtistFullscreen.text = song.artist
+
+                binding.shareIcon.setOnClickListener {
+                    val sendIntent = songViewModel.shareSong(song)
+                    val shareIntent = Intent.createChooser(sendIntent, null)
+                    startActivity(shareIntent)
+                }
             }
         }
 
@@ -34,6 +42,8 @@ class SongFragment : Fragment(R.layout.fragment_song) {
             val action = SongFragmentDirections.actionSongFragmentToHomeDest()
             findNavController().navigate(action)
         }
+
+
 
 
     }

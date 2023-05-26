@@ -54,7 +54,7 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
             songAdapter = SongAdapter(
                 onClickListener = {
                     homeViewModel.onSongPlayed(it)
-                }
+                },
             )
 
             lifecycleScope.launch {

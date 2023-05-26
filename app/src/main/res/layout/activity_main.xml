@@ -120,6 +120,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:layout_alignParentTop="true"
+                android:layout_toStartOf="@id/rewind_icon"
                 android:text="Current song title"
                 android:textSize="15sp"
                 android:textStyle="bold" />
