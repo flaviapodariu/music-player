@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.optional.musicplayer.R
 import com.optional.musicplayer.databinding.FragmentSongBinding
@@ -27,6 +28,11 @@ class SongFragment : Fragment(R.layout.fragment_song) {
                 binding.songTitleFullscreen.text = it.title
                 binding.songArtistFullscreen.text = it.artist
             }
+        }
+
+        binding.dropSongFragment.setOnClickListener {
+            val action = SongFragmentDirections.actionSongFragmentToHomeDest()
+            findNavController().navigate(action)
         }
 
 

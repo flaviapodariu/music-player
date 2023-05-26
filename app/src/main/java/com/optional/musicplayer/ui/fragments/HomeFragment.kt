@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,6 +23,7 @@ import com.optional.musicplayer.ui.viewmodels.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -33,7 +35,6 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
     private var readExternalGranted = false
     private var granularAudioPermission = false
     private lateinit var songAdapter: SongAdapter
-    private var externalAudioGranted = false
     private val homeViewModel: HomeViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,12 +58,15 @@ class HomeFragment: Fragment(R.layout.fragment_home) {
             )
 
             lifecycleScope.launch {
-                homeViewModel.playedSongState.playerClicked.collectLatest {
-                    val action = HomeFragmentDirections.actionHomeDestToSongFragment(it.id)
-                    findNavController().navigate(action)
+                homeViewModel.playedSongState.playerClicked.first().also {clicked->
+                    if(clicked){
+                        val song = homeViewModel.playedSongState.currentSong.first()
+                        Log.d("songg", song.title)
+                        val action = HomeFragmentDirections.actionHomeDestToSongFragment(song.id)
+                        findNavController().navigate(action)
+                    }
                 }
             }
-
 
             if(readExternalGranted || granularAudioPermission) {
                 createSongAdapter()

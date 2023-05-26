@@ -1,6 +1,8 @@
 package com.optional.musicplayer.ui
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +15,8 @@ import com.optional.musicplayer.data.Song
 import com.optional.musicplayer.databinding.ActivityMainBinding
 import com.optional.musicplayer.ui.viewmodels.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -31,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             mainViewModel.playedSongState.currentSong.collectLatest { songPlayed ->
+                Log.d("lower", songPlayed.title)
                 binding.currentSongArtist.text = songPlayed.artist
                 binding.currentSongTitle.text = songPlayed.title
                 Glide.with(applicationContext)
@@ -40,13 +45,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.playerWrapper.setOnClickListener{
-            lifecycleScope.launch {
-                mainViewModel.playedSongState.currentSong.first().also {
-                    mainViewModel.onPlayerClicked(it)
-                }
-            }
+            mainViewModel.onPlayerClicked()
+        }
 
-
+        val searchIconAnimator = ObjectAnimator.ofFloat(binding.mainToolbar.searchIcon, "translationX", -400f)
+        binding.mainToolbar.searchIcon.setOnClickListener {
+            searchIconAnimator.start()
         }
 
         val navHostFragment = supportFragmentManager

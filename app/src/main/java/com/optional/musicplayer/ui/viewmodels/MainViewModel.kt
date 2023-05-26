@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.optional.musicplayer.data.Song
 import com.optional.musicplayer.util.PlayedSongState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,9 +21,9 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun onPlayerClicked(song: Song) {
+    fun onPlayerClicked() {
         viewModelScope.launch {
-            playedSongState.onPlayerClicked(song)
+            playedSongState.onPlayerClicked()
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.optional.musicplayer.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.optional.musicplayer.data.MusicDatabase
@@ -19,6 +20,7 @@ class HomeViewModel @Inject constructor(
 ): ViewModel() {
 
    fun onSongPlayed(song: Song) {
+      Log.d("homevm", song.title)
       viewModelScope.launch {
          playedSongState.onSongPlayed(song)
       }
